@@ -23,17 +23,18 @@ import { LISTINGS, AREAS_INDEX } from "./data.js";
 
 /* ================= Firebase + hybrid models ================= */
 
-let intentModel = null;   // fast structured task, on-device friendly
-let advisorModel = null;  // deep Arabic answers
+let intentModel = null;      // fast structured task, on-device friendly
+let advisorModel = null;     // deep Arabic answers (hybrid)
+let advisorCloudOnly = null; // explicit cloud fallback
 let firebaseReady = false;
 let firebaseError = null;
 
-const ARABIC_OUTPUT = {
-  expectedInputs: [{ type: "text", languages: ["ar", "en"] }],
-  expectedOutputs: [{ type: "text", languages: ["ar", "en"] }]
-};
+// Note: we do NOT restrict expectedOutputs languages. Declaring "ar" as an
+// expected output language makes Chrome's availability probe wait/fail on
+// some versions and the SDK never falls back. The Arabic instruction lives
+// in the prompt itself, which works on-device and in-cloud.
 const JSON_OUTPUT = {
-  expectedInputs: [{ type: "text", languages: ["ar", "en"] }],
+  expectedInputs: [{ type: "text", languages: ["en", "ar"] }],
   expectedOutputs: [{ type: "text", languages: ["en"] }]
 };
 
@@ -77,11 +78,16 @@ function initFirebase() {
 
     advisorModel = getGenerativeModel(ai, {
       mode: InferenceMode.PREFER_ON_DEVICE,
-      onDeviceParams: { createOptions: ARABIC_OUTPUT },
       inCloudParams: {
         model: "gemini-3.8-flash",
         generationConfig: { maxOutputTokens: 1500, temperature: 0.7 }
       }
+    });
+
+    // Explicit cloud-only fallback model (default fallback model) used when
+    // the hybrid call stalls or the configured cloud model is unavailable.
+    advisorCloudOnly = getGenerativeModel(ai, {
+      mode: InferenceMode.ONLY_IN_CLOUD
     });
 
     firebaseReady = true;
@@ -289,9 +295,23 @@ ${listingsSummary()}`;
 async function askAdvisor(question, contextNote) {
   const prompt = ADVISOR_SYSTEM + "\n\n" + (contextNote ? contextNote + "\n\n" : "") + "سؤال العميل: " + question;
   const t0 = performance.now();
-  const result = await advisorModel.generateContent(prompt);
-  const ms = performance.now() - t0;
-  return { text: result.response.text(), src: result.response.inferenceSource, ms };
+  try {
+    const result = await withTimeout(advisorModel.generateContent(prompt), 40000);
+    const ms = performance.now() - t0;
+    return { text: result.response.text(), src: result.response.inferenceSource, ms };
+  } catch (e) {
+    console.warn("hybrid advisor call failed, retrying cloud-only:", e);
+    const result = await advisorCloudOnly.generateContent(prompt);
+    const ms = performance.now() - t0;
+    return { text: result.response.text(), src: "IN_CLOUD", ms };
+  }
+}
+
+function withTimeout(p, ms) {
+  return Promise.race([
+    p,
+    new Promise((_, rej) => setTimeout(() => rej(new Error("hybrid call timeout")), ms))
+  ]);
 }
 
 /* ================= chat UI ================= */
