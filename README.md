@@ -1,5 +1,9 @@
 # مستشار عقار — Aqar Advisor
 
+**Live demo:** https://bahgatai.github.io/aqar-advisor/
+
+![Aqar Advisor answering with a visible cloud-source badge](docs/screenshot-cloud-answer.png)
+
 A hybrid-AI real-estate assistant for Egyptian property seekers, built for
 **Google #BuildHybridAI 2026** with **Firebase AI Logic hybrid inference**
 (Web / Chrome).
