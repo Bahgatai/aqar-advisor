@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستشار عقار | Aqar Advisor — مساعد عقاري هجين (على الجهاز + سحابة)</title>
+<meta name="description" content="مساعد عقاري مصري يعمل بالذكاء الاصطناعي الهجين: Gemini Nano على جهازك عبر Firebase AI Logic، مع رجوع تلقائي للسحابة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">🏠</div>
+    <div>
+      <h1>مستشار عقار</h1>
+      <span class="tagline">Aqar Advisor — من فريق EREX</span>
+    </div>
+  </div>
+  <div class="hybrid-explainer" title="كل إجابة توضح مصدرها: على جهازك أو من السحابة">
+    <span class="pill pill-device">⚡ على الجهاز</span>
+    <span class="pill pill-cloud">☁️ السحابة</span>
+    <span class="pill-label">شارة المصدر على كل إجابة</span>
+  </div>
+</header>
+
+<section class="device-status" id="deviceStatus">
+  <div class="status-line">
+    <span id="onDeviceDot" class="dot dot-unknown"></span>
+    <span id="onDeviceText">جارٍ فحص النموذج المحلي (Gemini Nano عبر Chrome Prompt API)…</span>
+  </div>
+  <button id="initDeviceBtn" class="btn btn-ghost" hidden>⬇️ تجهيز النموذج المحلي</button>
+  <div id="downloadProgress" class="progress" hidden><div id="downloadBar" class="progress-bar"></div></div>
+</section>
+
+<main class="layout">
+
+  <section class="listings-pane">
+    <div class="pane-header">
+      <h2>عقارات تجريبية <span class="sample-tag">بيانات توضيحية — ليست عروضاً حقيقية</span></h2>
+      <p class="hint">اضغط على عقار لإضافته للمقارنة (حتى ٣). اكتب سؤالك بالعامية المصرية براحتك.</p>
+    </div>
+    <div id="listings" class="listings"></div>
+  </section>
+
+  <section class="chat-pane">
+    <div class="chat-header">
+      <h2>اسأل المستشار</h2>
+      <div class="stats" id="stats">⚡ 0 على الجهاز · ☁️ 0 سحابة</div>
+    </div>
+
+    <div id="compareTray" class="compare-tray" hidden>
+      <span>للمقارنة:</span>
+      <div id="compareChips" class="chips"></div>
+      <button id="compareBtn" class="btn btn-small">قارن بينهم</button>
+    </div>
+
+    <div id="chatLog" class="chat-log">
+      <div class="msg assistant">
+        <div class="bubble">
+          أهلاً بيك! أنا مستشار عقار، مساعدك في سوق العقارات المصري.<br>
+          جرّب تسأل مثلاً:
+          <div class="suggestions">
+            <button class="sugg">عايز شقة ٣ غرف في التجمع بحد أقصى ٥ مليون</button>
+            <button class="sugg">قارنلي بين أرخص شقتين عندك</button>
+            <button class="sugg">إيه الفرق بين المعادي ومدينة نصر في الأسعار؟</button>
+            <button class="sugg">أنا ميزانيتي مليونين، فين أحسن اختيار؟</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form id="chatForm" class="chat-form">
+      <input id="chatInput" type="text" autocomplete="off"
+             placeholder="اكتب سؤالك هنا… مثلاً: عايز شقة ٣ غرف في أكتوبر بحدود ٤ مليون">
+      <button type="submit" class="btn btn-primary">اسأل</button>
+    </form>
+
+    <p class="privacy-note">
+      🔐 فهم سؤالك بيحصل على جهازك لما يكون النموذج المحلي متاح، من غير ما أي حاجة تسيب المتصفح.
+      الإجابات العميقة بتروح لنموذج Gemini السحابي عبر Firebase AI Logic. شارة كل إجابة بتوضح مصدرها.
+    </p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>مشروع تجريبي لمسابقة Google #BuildHybridAI 2026 — مبني بـ Firebase AI Logic (استدلال هجين)</span>
+  <span>البيانات المعروضة أمثلة توضيحية فقط</span>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
