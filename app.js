@@ -76,10 +76,16 @@ function initFirebase() {
       }
     });
 
+    // Explicit onDeviceParams are REQUIRED: without createOptions the SDK's
+    // availability probe can wait on an on-device model download that never
+    // finishes (observed on Chrome without the built-in model), hanging the
+    // request instead of falling back. With explicit options the probe
+    // resolves immediately and the fallback works as designed.
     advisorModel = getGenerativeModel(ai, {
       mode: InferenceMode.PREFER_ON_DEVICE,
+      onDeviceParams: { createOptions: JSON_OUTPUT },
       inCloudParams: {
-        model: "gemini-3.8-flash",
+        model: "gemini-3.5-flash-lite",
         generationConfig: { maxOutputTokens: 1500, temperature: 0.7 }
       }
     });
@@ -296,7 +302,7 @@ async function askAdvisor(question, contextNote) {
   const prompt = ADVISOR_SYSTEM + "\n\n" + (contextNote ? contextNote + "\n\n" : "") + "سؤال العميل: " + question;
   const t0 = performance.now();
   try {
-    const result = await withTimeout(advisorModel.generateContent(prompt), 40000);
+    const result = await withTimeout(advisorModel.generateContent(prompt), 25000);
     const ms = performance.now() - t0;
     return { text: result.response.text(), src: result.response.inferenceSource, ms };
   } catch (e) {
