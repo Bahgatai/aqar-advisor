@@ -11,9 +11,9 @@ export const firebaseConfig = {
   appId: "1:1057278780612:web:3309f339ae20db346a5591"
 };
 
-// App Check. The #BuildHybridAI 2026 rules explicitly accept debug tokens in
-// submissions, so the hosted demo ships with this console-registered debug
-// token (Firebase console > App Check > Apps > Manage debug tokens).
-// For a production release, replace with a reCAPTCHA Enterprise site key.
-export const APPCHECK_SITE_KEY = "";
-export const APPCHECK_DEBUG_TOKEN = "3ef62a3f-ff68-4666-a78d-85d530b299ca";
+// App Check: production reCAPTCHA Enterprise (Fraud Defense) site key,
+// registered in Firebase console > App Check > Apps. The console-registered
+// debug token below is kept for local development only (the #BuildHybridAI
+// 2026 rules explicitly accept debug tokens in submissions).
+export const APPCHECK_SITE_KEY = "6LduQTQuAAAAAN5Rc-pDxXE88mu_kB3imeYi65Dx";
+export const APPCHECK_DEBUG_TOKEN = ""; // set a console-registered debug token here for local dev only, never commit a real one
